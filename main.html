@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tigrinho do bem</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      background: linear-gradient(135deg, #ff9800, #ff5722);
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      color: white;
+      overflow: hidden;
+    }
+
+    .slot-machine {
+      background: linear-gradient(145deg, #ff9800, #ff5722);
+      border-radius: 25px;
+      padding: 40px;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8);
+      text-align: center;
+      width: 500px;
+      position: relative;
+      border: 8px solid #ffeb3b;
+    }
+
+    .slot-machine::before {
+      content: "";
+      position: absolute;
+      top: -15px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 70%;
+      height: 20px;
+      background: #ffeb3b;
+      border-radius: 10px;
+      box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      color: #ffeb3b;
+      text-shadow: 2px 2px 10px #ff5722, 0 0 20px #ff9800;
+      margin-bottom: 15px;
+    }
+
+    .slot {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      background: linear-gradient(135deg, #ffcc80, #ff8a65);
+      border: 6px solid #ffeb3b;
+      border-radius: 15px;
+      padding: 20px;
+      margin: 20px 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .slot div {
+      width: 90px;
+      height: 90px;
+      background: linear-gradient(145deg, #ffeb3b, #ffa726);
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.5);
+      font-size: 3rem;
+      animation: spin 0.5s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      0%, 100% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.2);
+      }
+    }
+
+    .lever {
+      position: absolute;
+      right: -60px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 50px;
+      height: 120px;
+      background: #ffeb3b;
+      border: 4px solid #ffa726;
+      border-radius: 25px;
+      box-shadow: 0 10px 15px rgba(0, 0, 0, 0.5);
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+
+    .lever:hover {
+      transform: translateY(-50%) rotate(-10deg);
+    }
+
+    .lever:active {
+      transform: translateY(-50%) rotate(20deg);
+    }
+
+    .lever-head {
+      position: absolute;
+      bottom: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 80px;
+      background: #f44336;
+      border-radius: 50%;
+      border: 4px solid #ffeb3b;
+      box-shadow: 0 5px 10px rgba(0, 0, 0, 0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1rem;
+      color: #000;
+    }
+
+    .message {
+      font-size: 1.2rem;
+      color: #fff;
+      margin-top: 10px;
+    }
+
+    .confetti {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 10;
+    }
+
+    .confetti-piece {
+      position: absolute;
+      width: 10px;
+      height: 20px;
+      background: #ffeb3b;
+      animation: fall 3s ease-out infinite;
+    }
+
+    @keyframes fall {
+      0% {
+        transform: translateY(-100vh) rotate(0deg);
+      }
+      100% {
+        transform: translateY(100vh) rotate(360deg);
+      }
+    }
+
+    .winner-message {
+      font-size: 3rem;
+      color: #ffeb3b;
+      text-shadow: 3px 3px 15px #ff5722;
+      animation: bounce 1s ease-in-out infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-20px);
+      }
+    }
+  </style>
+</head>
+<body>
+  <audio id="girandoAudio" src="efeito1.mp3"></audio>
+  <audio id="ganhouAudio" src="chama.mp3"></audio>
+
+  <div id="confetti" class="confetti"></div>
+
+  <div class="slot-machine">
+    <h1>🎰 Tigrinho do bem 🎉</h1>
+    <div class="slot">
+      <div id="slot1">🐯</div>
+      <div id="slot2">🍌</div>
+      <div id="slot3">🌴</div>
+    </div>
+    <div class="lever" onclick="spinSlots()">
+      <div class="lever-head">Toque para girar</div>
+    </div>
+    <div class="message" id="message">Boa sorte!</div>
+  </div>
+
+  <script>
+    const symbols = ["🐯", "🍌", "🌴", "💎", "🍒", "🌟", "🍍", "🎲"];
+    const spinAudio = document.getElementById("girandoAudio");
+    const winAudio = document.getElementById("ganhouAudio");
+
+    function spinSlots() {
+      const slot1 = document.getElementById("slot1");
+      const slot2 = document.getElementById("slot2");
+      const slot3 = document.getElementById("slot3");
+      const message = document.getElementById("message");
+
+      message.textContent = "Girando...";
+
+    
+      spinAudio.currentTime = 0;
+      spinAudio.play();
+
+      let interval = setInterval(() => {
+        slot1.textContent = getRandomSymbol();
+        slot2.textContent = getRandomSymbol();
+        slot3.textContent = getRandomSymbol();
+      }, 100);
+
+      setTimeout(() => {
+        clearInterval(interval);
+        checkResult(slot1.textContent, slot2.textContent, slot3.textContent);
+      }, 2000);
+    }
+
+    function getRandomSymbol() {
+      return symbols[Math.floor(Math.random() * symbols.length)];
+    }
+
+    function checkResult(s1, s2, s3) {
+      const message = document.getElementById("message");
+      spinAudio.pause(); // Stop spin audio
+
+      if (s1 === s2 && s2 === s3) {
+        showConfetti();
+        winAudio.currentTime = 0;
+        winAudio.play(); // Play win audio
+        message.innerHTML = "<span class='winner-message'>CHAAAAAAMAAAAAA 🎉</span>";
+      } else {
+        message.textContent = "Não foi dessa vez! Tente novamente! 🎰";
+      }
+    }
+
+    function showConfetti() {
+      const confettiContainer = document.getElementById("confetti");
+      confettiContainer.innerHTML = "";
+      for (let i = 0; i < 100; i++) {
+        const piece = document.createElement("div");
+        piece.classList.add("confetti-piece");
+        piece.style.left = Math.random() * 100 + "%";
+        piece.style.backgroundColor = getRandomColor();
+        confettiContainer.appendChild(piece);
+      }
+      setTimeout(() => {
+        confettiContainer.innerHTML = "";
+      }, 3000);
+    }
+
+    function getRandomColor() {
+      const colors = ["#ffeb3b", "#ff5722", "#ff9800", "#f44336", "#8bc34a"];
+      return colors[Math.floor(Math.random() * colors.length)];
+    }
+  </script>
+</body>
+</html>
